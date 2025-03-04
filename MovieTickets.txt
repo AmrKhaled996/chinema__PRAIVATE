@@ -1,0 +1,120 @@
+-- MySQL Workbench Forward Engineering
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+-- -----------------------------------------------------
+-- Schema MovieTickets
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Schema MovieTickets
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `MovieTickets` DEFAULT CHARACTER SET utf8 ;
+SHOW WARNINGS;
+USE `MovieTickets` ;
+
+-- -----------------------------------------------------
+-- Table `MovieTickets`.`Movies`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `MovieTickets`.`Movies` (
+  `movieID` INT NOT NULL AUTO_INCREMENT,
+  `title` VARCHAR(45) NOT NULL,
+  `genre` ENUM('ACTION', 'ROMANTIC', 'HORROR', 'COMEDY') NOT NULL,
+  `duration` FLOAT NOT NULL,
+  PRIMARY KEY (`movieID`))
+ENGINE = InnoDB;
+
+SHOW WARNINGS;
+
+-- -----------------------------------------------------
+-- Table `MovieTickets`.`Hall`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `MovieTickets`.`Hall` (
+  `idHall` INT NOT NULL AUTO_INCREMENT,
+  `numberOfRows` INT NOT NULL,
+  `numberOfCols` INT NOT NULL,
+  PRIMARY KEY (`idHall`))
+ENGINE = InnoDB;
+
+SHOW WARNINGS;
+
+-- -----------------------------------------------------
+-- Table `MovieTickets`.`ScreenTime`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `MovieTickets`.`ScreenTime` (
+  `Hall_idHall` INT NOT NULL,
+  `Movies_movieID` INT NOT NULL,
+  `startDate` VARCHAR(45) NOT NULL,
+  `endDate` VARCHAR(45) NOT NULL,
+  INDEX `fk_ScreenTime_Movies1_idx` (`Movies_movieID` ASC) ,
+  INDEX `fk_ScreenTime_Hall1_idx` (`Hall_idHall` ASC) ,
+  PRIMARY KEY (`Hall_idHall`, `Movies_movieID`, `startDate`, `endDate`))
+ENGINE = InnoDB;
+
+SHOW WARNINGS;
+
+-- -----------------------------------------------------
+-- Table `MovieTickets`.`Seats`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `MovieTickets`.`Seats` (
+  `idSeats` VARCHAR(4) NOT NULL,
+  `Hall_idHall` INT NOT NULL,
+  `isAvailable` TINYINT NOT NULL,
+  `price` FLOAT NOT NULL,
+  `classType` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`idSeats`, `Hall_idHall`),
+  INDEX `fk_Seats_Hall_idx` (`Hall_idHall` ASC) )
+ENGINE = InnoDB;
+
+SHOW WARNINGS;
+
+-- -----------------------------------------------------
+-- Table `MovieTickets`.`customer`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `MovieTickets`.`customer` (
+  `CustomerID` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(45) NOT NULL,
+  `age` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`CustomerID`),
+  UNIQUE INDEX `CustomerID_UNIQUE` (`CustomerID` ASC) )
+ENGINE = InnoDB;
+
+SHOW WARNINGS;
+
+-- -----------------------------------------------------
+-- Table `MovieTickets`.`receipt`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `MovieTickets`.`receipt` (
+  `ReceiptID` INT NOT NULL AUTO_INCREMENT,
+  `totalPrice` FLOAT NOT NULL,
+  `ScreenTime_Hall_idHall` INT NOT NULL,
+  `ScreenTime_Movies_movieID` INT NOT NULL,
+  `Customer_CustomerID` INT NOT NULL,
+  PRIMARY KEY (`ReceiptID`),
+  INDEX `fk_Receipt_ScreenTime1_idx` (`ScreenTime_Hall_idHall` ASC, `ScreenTime_Movies_movieID` ASC) ,
+  INDEX `fk_Receipt_Customer1_idx` (`Customer_CustomerID` ASC) )
+ENGINE = InnoDB;
+
+SHOW WARNINGS;
+
+-- -----------------------------------------------------
+-- Table `MovieTickets`.`Seats_has_Receipt`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `MovieTickets`.`Seats_has_Receipt` (
+  `Seats_idSeats` VARCHAR(4) NOT NULL,
+  `Receipt_ReceiptID` INT NOT NULL,
+  PRIMARY KEY (`Seats_idSeats`, `Receipt_ReceiptID`),
+  INDEX `fk_Seats_has_Receipt_Receipt1_idx` (`Receipt_ReceiptID` ASC) ,
+  INDEX `fk_Seats_has_Receipt_Seats1_idx` (`Seats_idSeats` ASC) )
+ENGINE = InnoDB;
+
+SHOW WARNINGS;
+
+COMMIT;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
